@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Launch file just for displaying FC telemetry in a dedicated terminal -->
+  
+  <!-- Display FC telemetry messages -->
+  <node pkg="rostopic" type="rostopic" name="fc_telemetry_display" 
+        args="echo /flight_controller_node/telemetry" output="screen"/>
+  
+  <!-- Optional: Display FC numerical data -->
+  <node pkg="rostopic" type="rostopic" name="fc_data_display" 
+        args="echo /flight_controller_node/data" output="screen"/>
+</launch> 

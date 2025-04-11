@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Set ROS_IP for network communication -->
+  <env name="ROS_IP" value="192.168.1.100"/>
+  
+  <!-- Start roscore if needed -->
+  <!-- Note: Typically roscore is started automatically when launching files, so this node is usually not needed -->
+  
+  <!-- Launch the Vicon UDP node -->
+  <node pkg="rocket_integration" type="vicon_udp_node" name="vicon_node" output="screen">
+    <!-- Set the UDP port for Vicon data -->
+    <param name="port" value="57273"/>
+  </node>
+
+  <!-- Launch the command center node for user control (C++ version) -->
+  <node pkg="rocket_integration" type="command_center" name="command_center" output="screen" />
+  
+  <!-- Launch the latency monitor node -->
+  <node pkg="rocket_integration" type="latency_monitor" name="latency_monitor" output="screen">
+    <param name="enable_logging" value="true"/>
+  </node>
+  
+  <!-- Launch rqt_plot for real-time visualization of latency - this is still useful to keep -->
+  <node pkg="rqt_plot" type="rqt_plot" name="latency_plot" 
+        args="/vicon_node/vicon_latency/data /flight_controller_node/fc_latency/data /latency_monitor/total_latency/data" />
+        
+  <!-- Flight Controller visualization nodes removed to avoid too many windows -->
+  <!-- Use 'roslaunch rocket_integration view_fc_data.launch' separately to view specific values -->
+  
+  <!-- Parameters for data recording -->
+  <arg name="enable_recording" default="false" doc="Enable data recording (both CSV and/or rosbag)" />
+  <arg name="run_name" default="default" doc="Name for this recording run"/>
+  <arg name="record_rosbag" default="false" doc="Whether to record ROS bag files" />
+  <arg name="verbose_recording" default="false" doc="Show detailed recording information in the terminal" />
+
+  <!-- If recording enabled, include the dedicated recording launch file -->
+  <include if="$(arg enable_recording)" file="$(find rocket_integration)/launch/record_flight_data.launch">
+    <arg name="run_name" value="$(arg run_name)" />
+    <arg name="record_rosbag" value="$(arg record_rosbag)" />
+    <arg name="verbose" value="$(arg verbose_recording)" />
+  </include>
+</launch> 

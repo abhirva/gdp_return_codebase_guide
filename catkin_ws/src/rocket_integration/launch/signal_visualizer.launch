@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- This launch file runs on the ground station to visualize signal strength -->
+  
+  <!-- Define arguments first -->
+  <arg name="record" default="false" />
+  
+  <!-- Set ROS_IP for network communication -->
+  <env name="ROS_IP" value="192.168.1.100"/>
+  
+  <!-- Launch rqt_plot for signal quality (percentage) -->
+  <node pkg="rqt_plot" type="rqt_plot" name="quality_plot" 
+        args="/wifi_quality/data" />
+        
+  <!-- Launch rqt_plot for signal strength (dBm) with appropriate range -->
+  <node pkg="rqt_plot" type="rqt_plot" name="signal_plot" 
+        args="/wifi_signal/data" >
+    <!-- Set a better visualization range for dBm values -->
+    <param name="minimum" value="-100" />
+    <param name="maximum" value="0" />
+  </node>
+        
+  <!-- Launch a simple rostopic echo for detailed information -->
+  <node pkg="rostopic" type="rostopic" name="signal_info_echo" 
+        args="echo /wifi_info" output="screen" />
+        
+  <!-- Launch a signal recorder to save signal data over time -->
+  <node pkg="rosbag" type="record" name="signal_recorder" 
+        args="-o $(env HOME)/wifi_signal_data /wifi_signal /wifi_quality /wifi_info" 
+        if="$(arg record)" />
+</launch> 

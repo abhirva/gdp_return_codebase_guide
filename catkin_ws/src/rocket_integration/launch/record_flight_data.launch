@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Dedicated launch file for recording flight test data -->
+  
+  <!-- Recording parameters -->
+  <arg name="run_name" default="flight_test" doc="Name for this flight test"/>
+  <arg name="output_dir" default="$(env HOME)/flight_data" doc="Directory to save data"/>
+  <arg name="record_rosbag" default="false" doc="Whether to record data as a ROS bag file"/>
+  <arg name="record_csv" default="true" doc="Whether to record data as CSV files"/>
+  <arg name="auto_timestamp" default="true" doc="Whether to add timestamp to filenames"/>
+  <arg name="verbose" default="false" doc="Set to true for detailed recording information in terminal"/>
+  
+  <!-- Optional topic specification -->
+  <arg name="additional_topics" default="" doc="Additional topics to record (space-separated)"/>
+  
+  <!-- CSV recorder node - output mode based on verbose flag -->
+  <node pkg="rocket_integration" type="csv_recorder" name="csv_recorder" 
+        if="$(arg record_csv)" output="screen">
+    <param name="output_dir" value="$(arg output_dir)"/>
+    <param name="run_name" value="$(arg run_name)"/>
+    <param name="auto_timestamp" value="$(arg auto_timestamp)"/>
+  </node>
+  
+  <!-- ROS bag recorder (if enabled) -->
+  <node pkg="rosbag" type="record" name="rosbag_recorder" 
+        args="-o $(arg output_dir)/$(arg run_name)_recording /flight_controller_node/telemetry /flight_controller_node/data /vicon_node/pose /vicon_node/vicon_latency /flight_controller_node/fc_latency /latency_monitor/total_latency $(arg additional_topics)" 
+        if="$(arg record_rosbag)" output="screen" />
+  
+  <!-- Only print recording info if verbose is enabled -->
+  <group if="$(arg verbose)">
+    <!-- Print recording info -->
+    <node pkg="rostopic" type="rostopic" name="recording_info" 
+          args="echo /flight_controller_node/data -n 1" output="screen" />
+          
+    <!-- Echo recording status message -->
+    <node pkg="rocket_integration" type="echo_data_reference" name="recording_status" output="screen">
+      <param name="summary" type="string" value="
+     RECORDING STATUS:
+     ----------------
+     Run Name: $(arg run_name)
+     Output Directory: $(arg output_dir)
+     CSV Recording: $(arg record_csv)
+     ROS Bag Recording: $(arg record_rosbag)
+     
+     DATA FORMAT REFERENCE:
+     ---------------------
+     [0-2]: VICON position (X,Y,Z)
+     [3-5]: Euler angles (Roll,Pitch,Yaw)
+     [6-8]: Estimator position (X,Y,Z)
+     [9-11]: Estimator velocity (X,Y,Z)
+     [12-14]: IMU rate (X,Y,Z)
+     [15-17]: Controller values (Thrust in N, Delta Y, Delta Z)
+     
+     HOW TO ANALYZE:
+     --------------
+     1. CSV files can be opened in Excel, MATLAB, or Python for analysis
+     2. ROS bags can be played back with: rosbag play [filename]
+     3. CSV files include timestamp and elapsed time columns
+      "/>
+    </node>
+  </group>
+  
+  <!-- Minimal status indicator that always shows -->
+  <node unless="$(arg verbose)" pkg="rocket_integration" type="echo_data_reference" name="recording_minimal_status" output="screen">
+    <param name="summary" type="string" value="
+    RECORDING ACTIVE:
+    ---------------
+    Run Name: $(arg run_name)
+    CSV Recording: $(arg record_csv)
+    ROS Bag Recording: $(arg record_rosbag)
+    Use 'verbose:=true' for more details.
+    "/>
+  </node>
+</launch> 

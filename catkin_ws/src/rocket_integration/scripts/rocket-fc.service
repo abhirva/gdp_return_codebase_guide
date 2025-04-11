@@ -1,0 +1,16 @@
+[Unit]
+Description=Rocket Flight Controller ROS Node
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jetsonog
+Environment="ROS_MASTER_URI=http://192.168.1.100:11311"
+Environment="ROS_IP=192.168.1.3"
+ExecStart=/home/jetsonog/rocket-ros-ws/catkin_ws/src/rocket_integration/scripts/startup.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target 
