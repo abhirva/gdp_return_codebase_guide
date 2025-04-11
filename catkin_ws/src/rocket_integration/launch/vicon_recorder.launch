@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <!-- Launch the Vicon data recorder node -->
-    <node name="vicon_data_recorder" pkg="rocket_integration" type="vicon_data_recorder" output="screen">
-        <!-- Specify the Vicon objects to track -->
-        <param name="vicon_objects" value="['Test1return']" />
-    </node>
-</launch> 
