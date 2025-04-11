@@ -37,7 +37,7 @@ catkin_ws (Catkin Workspace) is the standard ROS workspace structure used for or
    - Various README files explaining each component
 
 ## Access to Implementation
-The actual implementation codebase is maintained in a private repository "rocket-ros-ws". If you require access to the implementation code for development, testing, or further work on this project, please contact the author at [Your Contact Information].
+The actual implementation codebase is maintained in a private repository "rocket-ros-ws". If you require access to the implementation code for development, testing, or further work on this project, please contact the author at abhirva.navalakhe.368@cranfield.ac.uk
 
 ## How to Use This Guide
 1. Start with the main architecture documentation
@@ -46,4 +46,4 @@ The actual implementation codebase is maintained in a private repository "rocket
 4. Use this knowledge to work with the actual implementation repository
 
 ## Note
-This repository is intended for documentation purposes only. The actual implementation may differ from what is described here, as the system is continuously being improved and updated. 
+This repository is intended for documentation purposes only. The actual implementation may require further setup, from what is described here.
